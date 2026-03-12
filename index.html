@@ -1,0 +1,543 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Matilda Butik - Dijital Varlıklar</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #0d0d0d;
+            color: #fff;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 1080px;
+            padding: 40px 20px 60px;
+        }
+
+        /* Logo */
+        .logo-section {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+
+        .logo-section img {
+            width: 160px;
+            height: 160px;
+            object-fit: contain;
+            border-radius: 24px;
+        }
+
+        .logo-section h1 {
+            margin-top: 12px;
+            font-size: 22px;
+            font-weight: 600;
+            color: #e8b4d0;
+            letter-spacing: 1px;
+        }
+
+        /* Section titles */
+        .section-title {
+            font-size: 14px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            color: #888;
+            margin-bottom: 16px;
+            padding-left: 4px;
+        }
+
+        /* Icon Grid */
+        .icon-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 16px;
+            margin-bottom: 40px;
+        }
+
+        .icon-card {
+            background: #1a1a1a;
+            border: 1px solid #2a2a2a;
+            border-radius: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 20px 10px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            position: relative;
+            aspect-ratio: 1;
+        }
+
+        .icon-card:hover {
+            background: #222;
+            border-color: #444;
+            transform: translateY(-2px);
+        }
+
+        .icon-card:active {
+            transform: scale(0.96);
+        }
+
+        .icon-card .icon {
+            width: 48px;
+            height: 48px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 10px;
+            font-size: 24px;
+        }
+
+        .icon-card .label {
+            font-size: 12px;
+            font-weight: 600;
+            text-align: center;
+            color: #ccc;
+        }
+
+        .icon-card .sub-label {
+            font-size: 10px;
+            color: #666;
+            margin-top: 4px;
+            text-align: center;
+            word-break: break-all;
+        }
+
+        /* Bank Colors */
+        .bank-akbank .icon { background: #e4002b; }
+        .bank-ziraat .icon { background: #00854a; }
+        .bank-vakif .icon { background: #ffc300; color: #1a1a1a; }
+        .bank-garanti .icon { background: #00a651; }
+        .bank-is .icon { background: #6b3fa0; }
+        .bank-yapikredi .icon { background: #004990; }
+
+        /* Action buttons */
+        .action-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 16px;
+            margin-bottom: 40px;
+        }
+
+        .action-card {
+            background: #1a1a1a;
+            border: 1px solid #2a2a2a;
+            border-radius: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 20px 10px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            text-decoration: none;
+            color: #fff;
+            aspect-ratio: 1;
+        }
+
+        .action-card:hover {
+            background: #222;
+            border-color: #444;
+            transform: translateY(-2px);
+        }
+
+        .action-card:active {
+            transform: scale(0.96);
+        }
+
+        .action-card .icon {
+            width: 48px;
+            height: 48px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 10px;
+            font-size: 24px;
+        }
+
+        .action-card .label {
+            font-size: 12px;
+            font-weight: 600;
+            text-align: center;
+            color: #ccc;
+        }
+
+        .whatsapp .icon { background: #25d366; }
+        .search-btn .icon { background: #555; }
+        .instagram .icon {
+            background: linear-gradient(45deg, #f09433, #e6683c, #dc2743, #cc2366, #bc1888);
+        }
+        .phone-btn .icon { background: #3b82f6; }
+
+        /* Toast notification */
+        .toast {
+            position: fixed;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%) translateY(100px);
+            background: #25d366;
+            color: #000;
+            padding: 12px 28px;
+            border-radius: 12px;
+            font-size: 14px;
+            font-weight: 600;
+            opacity: 0;
+            transition: all 0.3s ease;
+            z-index: 1000;
+            pointer-events: none;
+        }
+
+        .toast.show {
+            opacity: 1;
+            transform: translateX(-50%) translateY(0);
+        }
+
+        /* IBAN modal */
+        .modal-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,0.7);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 999;
+            backdrop-filter: blur(4px);
+        }
+
+        .modal-overlay.active {
+            display: flex;
+        }
+
+        .modal {
+            background: #1e1e1e;
+            border: 1px solid #333;
+            border-radius: 20px;
+            padding: 32px;
+            max-width: 440px;
+            width: 90%;
+            text-align: center;
+        }
+
+        .modal h3 {
+            font-size: 18px;
+            margin-bottom: 6px;
+            color: #fff;
+        }
+
+        .modal .modal-subtitle {
+            font-size: 13px;
+            color: #888;
+            margin-bottom: 20px;
+        }
+
+        .modal .iban-display {
+            background: #111;
+            border: 1px solid #333;
+            border-radius: 12px;
+            padding: 16px;
+            font-family: 'Courier New', monospace;
+            font-size: 16px;
+            letter-spacing: 1px;
+            color: #e8b4d0;
+            margin-bottom: 20px;
+            word-break: break-all;
+            user-select: all;
+        }
+
+        .modal .copy-btn {
+            background: #e8b4d0;
+            color: #0d0d0d;
+            border: none;
+            border-radius: 12px;
+            padding: 14px 32px;
+            font-size: 15px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.2s;
+            width: 100%;
+        }
+
+        .modal .copy-btn:hover {
+            background: #d4a0bc;
+        }
+
+        .modal .close-btn {
+            margin-top: 12px;
+            background: none;
+            border: none;
+            color: #666;
+            font-size: 13px;
+            cursor: pointer;
+        }
+
+        .modal .close-btn:hover {
+            color: #aaa;
+        }
+
+        /* Footer */
+        .footer {
+            text-align: center;
+            color: #444;
+            font-size: 12px;
+            margin-top: 20px;
+            padding-top: 20px;
+            border-top: 1px solid #1a1a1a;
+        }
+
+        /* Responsive */
+        @media (max-width: 600px) {
+            .container {
+                padding: 24px 16px 40px;
+            }
+
+            .icon-grid,
+            .action-grid {
+                grid-template-columns: repeat(3, 1fr);
+                gap: 12px;
+            }
+
+            .logo-section img {
+                width: 120px;
+                height: 120px;
+            }
+
+            .icon-card .icon,
+            .action-card .icon {
+                width: 40px;
+                height: 40px;
+                font-size: 20px;
+            }
+        }
+
+        /* SVG icons */
+        .icon svg {
+            width: 26px;
+            height: 26px;
+            fill: #fff;
+        }
+
+        .bank-vakif .icon svg {
+            fill: #1a1a1a;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <!-- Logo -->
+    <div class="logo-section">
+        <img src="assets/logo.jpg" alt="Matilda Butik Logo">
+        <h1>Matilda Butik</h1>
+    </div>
+
+    <!-- Quick Actions -->
+    <div class="section-title">Hızlı İşlemler</div>
+    <div class="action-grid">
+        <a class="action-card whatsapp" href="https://wa.me/905322644940" target="_blank" rel="noopener noreferrer">
+            <div class="icon">
+                <svg viewBox="0 0 24 24"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
+            </div>
+            <div class="label">WhatsApp</div>
+        </a>
+
+        <a class="action-card phone-btn" href="tel:+905322644940">
+            <div class="icon">
+                <svg viewBox="0 0 24 24"><path d="M6.62 10.79c1.44 2.83 3.76 5.14 6.59 6.59l2.2-2.2c.27-.27.67-.36 1.02-.24 1.12.37 2.33.57 3.57.57.55 0 1 .45 1 1V20c0 .55-.45 1-1 1-9.39 0-17-7.61-17-17 0-.55.45-1 1-1h3.5c.55 0 1 .45 1 1 0 1.25.2 2.45.57 3.57.11.35.03.74-.25 1.02l-2.2 2.2z"/></svg>
+            </div>
+            <div class="label">Ara</div>
+        </a>
+
+        <a class="action-card instagram" href="https://www.instagram.com/matildabutikk/" target="_blank" rel="noopener noreferrer">
+            <div class="icon">
+                <svg viewBox="0 0 24 24"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zM12 0C8.741 0 8.333.014 7.053.072 2.695.272.273 2.69.073 7.052.014 8.333 0 8.741 0 12c0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98C8.333 23.986 8.741 24 12 24c3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98C15.668.014 15.259 0 12 0zm0 5.838a6.162 6.162 0 100 12.324 6.162 6.162 0 000-12.324zM12 16a4 4 0 110-8 4 4 0 010 8zm6.406-11.845a1.44 1.44 0 100 2.881 1.44 1.44 0 000-2.881z"/></svg>
+            </div>
+            <div class="label">Instagram</div>
+        </a>
+
+        <div class="action-card search-btn" onclick="toggleSearch()">
+            <div class="icon">
+                <svg viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/></svg>
+            </div>
+            <div class="label">Ara</div>
+        </div>
+    </div>
+
+    <!-- Search bar (hidden by default) -->
+    <div id="searchBar" style="display:none; margin-bottom: 24px;">
+        <input type="text" id="searchInput" placeholder="Banka adı ile ara..." oninput="filterBanks()" style="
+            width: 100%;
+            padding: 14px 20px;
+            border-radius: 14px;
+            border: 1px solid #333;
+            background: #1a1a1a;
+            color: #fff;
+            font-size: 15px;
+            outline: none;
+        ">
+    </div>
+
+    <!-- Bank IBANs -->
+    <div class="section-title">Banka Hesapları</div>
+    <div class="icon-grid" id="bankGrid">
+
+        <div class="icon-card bank-akbank" data-bank="Akbank" onclick="showIban('Akbank', 'Selma Başak', 'TR12 0004 6000 1234 5678 9012 34')">
+            <div class="icon">
+                <svg viewBox="0 0 24 24"><path d="M2 20h20V4H2v16zm2-2V6h16v12H4z M12 7l5 4h-3v4h-4v-4H7l5-4z"/></svg>
+            </div>
+            <div class="label">Akbank</div>
+            <div class="sub-label">TR12 •••• 9012 34</div>
+        </div>
+
+        <div class="icon-card bank-ziraat" data-bank="Ziraat" onclick="showIban('Ziraat Bankası', 'Selma Başak', 'TR34 0001 0000 5678 9012 3456 78')">
+            <div class="icon">
+                <svg viewBox="0 0 24 24"><path d="M12 2L2 7v2h20V7L12 2zm0 2.5L18 7H6l6-2.5zM4 11v7h2v-7H4zm4 0v7h2v-7H8zm4 0v7h2v-7h-2zm4 0v7h2v-7h-2zM2 20h20v2H2v-2z"/></svg>
+            </div>
+            <div class="label">Ziraat</div>
+            <div class="sub-label">TR34 •••• 3456 78</div>
+        </div>
+
+        <div class="icon-card bank-vakif" data-bank="Vakıfbank" onclick="showIban('VakıfBank', 'Selma Başak', 'TR56 0001 5000 1234 5678 9012 34')">
+            <div class="icon">
+                <svg viewBox="0 0 24 24"><path d="M12 2L2 7v2h20V7L12 2zm0 2.5L18 7H6l6-2.5zM4 11v7h2v-7H4zm4 0v7h2v-7H8zm4 0v7h2v-7h-2zm4 0v7h2v-7h-2zM2 20h20v2H2v-2z"/></svg>
+            </div>
+            <div class="label">VakıfBank</div>
+            <div class="sub-label">TR56 •••• 9012 34</div>
+        </div>
+
+        <div class="icon-card bank-garanti" data-bank="Garanti" onclick="showIban('Garanti BBVA', 'Selma Başak', 'TR78 0006 2000 1234 5678 9012 34')">
+            <div class="icon">
+                <svg viewBox="0 0 24 24"><path d="M2 20h20V4H2v16zm2-2V6h16v12H4z M12 7l5 4h-3v4h-4v-4H7l5-4z"/></svg>
+            </div>
+            <div class="label">Garanti</div>
+            <div class="sub-label">TR78 •••• 9012 34</div>
+        </div>
+
+        <div class="icon-card bank-is" data-bank="İş Bankası" onclick="showIban('İş Bankası', 'Selma Başak', 'TR90 0006 4000 1234 5678 9012 34')">
+            <div class="icon">
+                <svg viewBox="0 0 24 24"><path d="M2 20h20V4H2v16zm2-2V6h16v12H4z M12 7l5 4h-3v4h-4v-4H7l5-4z"/></svg>
+            </div>
+            <div class="label">İş Bankası</div>
+            <div class="sub-label">TR90 •••• 9012 34</div>
+        </div>
+
+        <div class="icon-card bank-yapikredi" data-bank="Yapı Kredi" onclick="showIban('Yapı Kredi', 'Selma Başak', 'TR11 0006 7000 1234 5678 9012 34')">
+            <div class="icon">
+                <svg viewBox="0 0 24 24"><path d="M2 20h20V4H2v16zm2-2V6h16v12H4z M12 7l5 4h-3v4h-4v-4H7l5-4z"/></svg>
+            </div>
+            <div class="label">Yapı Kredi</div>
+            <div class="sub-label">TR11 •••• 9012 34</div>
+        </div>
+
+    </div>
+</div>
+
+<!-- IBAN Modal -->
+<div class="modal-overlay" id="modalOverlay" onclick="closeModal(event)">
+    <div class="modal">
+        <h3 id="modalBank"></h3>
+        <div class="modal-subtitle" id="modalName"></div>
+        <div class="iban-display" id="modalIban"></div>
+        <button class="copy-btn" onclick="copyIban()">📋 IBAN Kopyala</button>
+        <br>
+        <button class="close-btn" onclick="document.getElementById('modalOverlay').classList.remove('active')">Kapat</button>
+    </div>
+</div>
+
+<!-- Toast -->
+<div class="toast" id="toast">✓ IBAN kopyalandı!</div>
+
+<script>
+    let currentIban = '';
+
+    function showIban(bank, name, iban) {
+        currentIban = iban;
+        document.getElementById('modalBank').textContent = bank;
+        document.getElementById('modalName').textContent = name;
+        document.getElementById('modalIban').textContent = iban;
+        document.getElementById('modalOverlay').classList.add('active');
+    }
+
+    function closeModal(e) {
+        if (e.target === e.currentTarget) {
+            document.getElementById('modalOverlay').classList.remove('active');
+        }
+    }
+
+    function copyIban() {
+        const cleanIban = currentIban.replace(/\s/g, '');
+        navigator.clipboard.writeText(cleanIban).then(() => {
+            showToast('✓ IBAN kopyalandı!');
+            setTimeout(() => {
+                document.getElementById('modalOverlay').classList.remove('active');
+            }, 600);
+        }).catch(() => {
+            // Fallback
+            const ta = document.createElement('textarea');
+            ta.value = cleanIban;
+            ta.style.position = 'fixed';
+            ta.style.opacity = '0';
+            document.body.appendChild(ta);
+            ta.select();
+            document.execCommand('copy');
+            document.body.removeChild(ta);
+            showToast('✓ IBAN kopyalandı!');
+            setTimeout(() => {
+                document.getElementById('modalOverlay').classList.remove('active');
+            }, 600);
+        });
+    }
+
+    function showToast(msg) {
+        const toast = document.getElementById('toast');
+        toast.textContent = msg;
+        toast.classList.add('show');
+        setTimeout(() => toast.classList.remove('show'), 2000);
+    }
+
+    function toggleSearch() {
+        const bar = document.getElementById('searchBar');
+        const input = document.getElementById('searchInput');
+        if (bar.style.display === 'none') {
+            bar.style.display = 'block';
+            input.focus();
+        } else {
+            bar.style.display = 'none';
+            input.value = '';
+            filterBanks();
+        }
+    }
+
+    function filterBanks() {
+        const query = document.getElementById('searchInput').value.toLowerCase();
+        const cards = document.querySelectorAll('#bankGrid .icon-card');
+        cards.forEach(card => {
+            const bank = card.getAttribute('data-bank').toLowerCase();
+            card.style.display = bank.includes(query) ? '' : 'none';
+        });
+    }
+
+    // Close modal on Escape
+    document.addEventListener('keydown', e => {
+        if (e.key === 'Escape') {
+            document.getElementById('modalOverlay').classList.remove('active');
+        }
+    });
+</script>
+
+</body>
+</html>
